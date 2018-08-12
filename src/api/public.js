@@ -3,44 +3,44 @@ import axios from 'axios'
 axios.defaults.timeout = 10000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www=form-urlencoded';
 
-export const baseUrl = "http://localhost:8088";
+const baseUrl = "http://localhost:8088";
 
-export const http = {
-  fetchGet(url, params = {}) {
+export default {
+  get(uri, params = {}) {
     return new Promise((resolve, reject) => {
-      axios.get(url, params)
+      axios.get(baseUrl + uri, params)
         .then(rep => resolve(rep.data))
         .catch(error => reject(error))
     })
   },
 
-  fetchQuickSearch(url) {
+  get(uri) {
     return new Promise((resolve, reject) => {
-      axios.get(url)
+      axios.get(baseUrl + uri)
         .then(rep => resolve(rep.data))
         .catch(error => reject(error))
     })
   },
 
-  fetchPost(url, params = {}) {
+  post(uri, params = {}) {
     return new Promise((resolve, reject) => {
-      axios.post(url, params)
+      axios.post(baseUrl + uri, params)
         .then(rep => resolve(rep.data))
         .catch(error => reject(error))
     })
   },
 
-  put(url, params = {}) {
+  put(uri, params = {}) {
     return new Promise((resolve, reject) => {
-      axios.put(url, params)
+      axios.put(baseUrl + uri, params)
         .then(rep => resolve(rep.data))
         .catch(error => reject(error))
     })
   },
 
-  delete(url) {
+  delete(uri) {
     return new Promise((resolve, reject) => {
-      axios.delete(url)
+      axios.delete(baseUrl + uri)
         .then(rep => resolve(rep.data))
         .catch(error => reject(error))
     })

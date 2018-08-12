@@ -1,26 +1,29 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import Login from '../pages/login.vue'
 import Main from  '../pages/main.vue'
+import Dashboard from '../pages/dashboard.vue'
 
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },{
-      path:'/login',
-      name:'Login',
-      component:Login
-    },
+  routes: [{
+    path:'/',
+    component:Login,
+  },
     {
       path:'/main',
-      name:'Main',
-      component:Main
+      component:Main,
+      children:[
+        {
+          path:'/main/dashboard',
+          component:Dashboard
+        }
+      ]
+    },
+    {
+      path:'/main/dashboard',
+      component:Dashboard
     }
   ]
 })

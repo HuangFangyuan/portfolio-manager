@@ -14,8 +14,8 @@
 </template>
 
 <script>
-  import http from '../util/http'
-  import prediction from '../util/prediction'
+  import USER from '../api/user'
+  import PREDICTION from '../util/prediction'
   export default {
     data() {
       return {
@@ -27,24 +27,29 @@
     },
     methods:{
       login(){
-        if(this.id === '' || this.password === ''){
-          this.$message.error("id or password is missed");
-          return;
-        }
+        if (!this.checkForm()) return;
         let params = new URLSearchParams();
         params.append('id', this.form.id);
         params.append('password', this.form.password);
-        this.$http.post(http.composeUrl('/login'), params)
+        USER.login(params)
           .then(rep => {
-            if(prediction.httpSuccess(rep)){
+            if(PREDICTION.httpSuccess(rep)){
               this.$store.commit("SET_LOG_FLAG", true);
               this.$store.commit("SET_USER_ID", rep.data.data.id);
               this.$store.commit("SET_USER_ROLE", rep.data.data.role.id);
-              this.$router.push('/home');
+              this.$router.push('/main');
             }else{
               this.$message.error("log in failed")
             }
           })
+      },
+      checkForm() {
+        if(this.form.id === '' || this.form.password === ''){
+          this.$message.error("id or password is missed");
+          return false;
+//          this.$throw('id or password is missed')
+        }
+        return true;
       }
     }
   }

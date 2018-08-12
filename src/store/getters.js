@@ -1,4 +1,3 @@
-
 export default {
   getUserId(state) {
     return state.userId;
@@ -9,5 +8,8 @@ export default {
   ,
   getUserRole(state) {
     return state.role;
+  },
+  getUserName(state) {
+    return state.userName;
   }
 }
