@@ -13,7 +13,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-build/
+
 .babelrc
 .editorconfig
 .postcssrc.js
