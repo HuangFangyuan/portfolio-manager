@@ -18,15 +18,15 @@
     <el-container>
       <el-aside class="side-nav" width="200px">
         <el-menu class="menu" router>
-          <el-menu-item index="/dashboard" align="left">
+          <el-menu-item index="/main/dashboard" align="left">
             <template slot="title"><i class="discover-icon"></i>Dashboard</template>
           </el-menu-item>
-          <el-menu-item index="/CRUD" align="left">
+          <el-menu-item index="/main/CRUD" align="left">
             <template slot="title"><i class="discover-icon"></i>CRUD</template>
           </el-menu-item>
-          <el-submenu index="1" v-if="role === 'admin'" align="left">
+          <el-menu-item index="/main/upload" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="monitor-icon"></i>Upload</template>
-          </el-submenu>
+          </el-menu-item>
           <el-submenu index="2" align="left">
             <template slot="title"><i class="graph-icon"></i>Aggregation</template>
           </el-submenu>
@@ -76,6 +76,9 @@
       wh() {
         this.window.height = window.innerHeight-153+'px';
       }
+    },
+    mounted(){
+      this.wh()
     }
   }
 </script>

@@ -6,7 +6,19 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data(){
+    return {
+      window:{
+        height:''
+      }
+    }
+  },
+  methods:{
+    wh() {
+      this.window.height = window.innerHeight-153+'px';
+    }
+  }
 }
 </script>
 

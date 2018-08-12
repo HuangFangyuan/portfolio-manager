@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '../pages/login.vue'
-import Main from  '../pages/main.vue'
-import Dashboard from '../pages/dashboard.vue'
+import Login from '../pages/login'
+import Main from  '../pages/main'
+import Dashboard from '../pages/dashboard'
+import Upload from '../pages/upload'
 
 Vue.use(Router)
 
@@ -18,6 +19,9 @@ export default new Router({
         {
           path:'/main/dashboard',
           component:Dashboard
+        },{
+          path:'/main/upload',
+          component:Upload
         }
       ]
     },
