@@ -13,9 +13,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-
-.babelrc
-.editorconfig
-.postcssrc.js
-static/
-config/
