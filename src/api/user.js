@@ -12,5 +12,8 @@ export default {
   },
   createManager(params){
     return http.post('/manager', params)
+  },
+  removeManager(id){
+    return http.delete('/manager/' + id)
   }
 }

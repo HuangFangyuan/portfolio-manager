@@ -8,7 +8,39 @@
         :label="item.title"
         :name="item.name"
       >
-        {{item.content}}
+        <el-table
+          :data="managers"
+          style="width: 95%"
+          :default-sort = "{ prop: 'date', order: 'descending'}"
+        >
+          <el-table-column
+            prop="date"
+            label="date"
+            sortable
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="name"
+            sortable
+            width="180">
+          </el-table-column>
+          <el-table-column
+            prop="address"
+            label="address"
+            :formatter="formatter">
+          </el-table-column>
+          <el-table-column label="operate">
+            <template slot-scope="scope">
+              <el-button size="mini" @click="handleView(scope.$index, scope.row)">More</el-button>
+              <el-button size="mini">Edit</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="page-container">
+          <el-tag class="amount">total page: {{ item.pageSize }} , total data: {{ item.total }} </el-tag>
+          <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="item.pageNum" class="pagination"></el-pagination>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -18,20 +50,28 @@
   export default {
     data() {
       return {
-        editableTabsValue:'2',
+        editableTabsValue:'1',
         editableTabs: [{
           title: 'Tab 1',
           name: '1',
-          content: 'Tab 1 content'
-        }, {
-          title: 'Tab 2',
-          name: '2',
-          content: 'Tab 2 content'
+          content: 'Tab 1 content',
+          total:200,
+          pageNum:3,
+        },{
+          title: 'Tab 1',
+          name: '1',
+          content: 'Tab 1 content',
+          total:200,
+          pageNum:3,
         }],
-        tabIndex: 2
+        pageSize:8,
+        tabIndex: 1
       }
     },
     methods:{
+      handleCurrentChange(page) {
+        this.getManagers(this.size * (page - 1));
+      },
       handleTabsEdit(targetName, action) {
         if (action === 'add') {
           let newTabName = ++this.tabIndex + '';
@@ -55,7 +95,6 @@
               }
             });
           }
-
           this.editableTabsValue = activeName;
           this.editableTabs = tabs.filter(tab => tab.name !== targetName);
         }
@@ -69,5 +108,22 @@
     background-color: white;
     width: 95%;
     height: 500px;
+
+    .btn-group{
+      display: flex;
+      justify-content: flex-start;
+      margin: 20px;
+    }
+    .page-container {
+      width: 1100px;
+      margin-top: 30px;
+      display: flex;
+      .amount {
+        display: inline-block;
+      }
+      .pagination {
+        margin-left: auto;
+      }
+    }
   }
 </style>

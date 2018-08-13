@@ -6,14 +6,17 @@
     </div>
 
     <el-dialog title="New Manager" :visible.sync="dialogFormVisible">
-      <el-form :model="managerForm">
-        <el-form-item label="Name" :label-width="formLabelWidth">
+      <el-form :model="managerForm" lable-width="80px">
+        <el-form-item label="Name" :lable-width="formLabelWidth">
           <el-input v-model="managerForm.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Contact" :label-width="formLabelWidth">
+          <el-input v-model="managerForm.contact" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">OK</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">Submit</el-button>
       </div>
     </el-dialog>
 
@@ -61,7 +64,7 @@
       return {
         managerForm:{
           name:'',
-
+          contact:null
         },
         managers:[
           {
@@ -84,8 +87,24 @@
       handleCurrentChange(page) {
         this.getManagers(this.size * (page - 1));
       },
-      createManager(manager){
-
+      createManager(){
+        let params = new URLSearchParams();
+        params.append('name', this.managerForm.name);
+        params.append('contact', this.managerForm.contact);
+        MANAGER.createManager(params)
+          .then(rep => {
+            if (PREDICTION.httpSuccess(rep)){
+              this.$message.success(rep.data.msg)
+            }
+          })
+      },
+      removeManager(id){
+        MANAGER.removeManager(id)
+          .then(rep => {
+            if (PREDICTION.httpSuccess(rep)){
+              this.$message.success(rep.data.msg)
+            }
+          })
       },
       getManagers(from = 0) {
         let params = {
