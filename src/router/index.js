@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '../pages/login'
-import Main from  '../pages/main'
-import Dashboard from '../pages/dashboard'
-import Upload from '../pages/upload'
+import Login from '../pages/login.vue'
+import Main from  '../pages/main.vue'
+import Dashboard from '../pages/dashboard.vue'
+import Upload from '../pages/upload.vue'
+import Manager from '../pages/manager.vue'
+import Portfolio from '../pages/portfolio.vue'
 
 Vue.use(Router)
 
@@ -22,12 +24,14 @@ export default new Router({
         },{
           path:'/main/upload',
           component:Upload
+        },{
+          path:'/main/manager',
+          component:Manager
+        },{
+          path:'/main/portfolio',
+          component:Portfolio
         }
       ]
-    },
-    {
-      path:'/main/dashboard',
-      component:Dashboard
     }
   ]
 })

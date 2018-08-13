@@ -1,5 +1,5 @@
 <template>
-  <el-container class="app-container" :syle="height">
+  <el-container class="app-container" :style="window">
     <el-header class="header">
       <a class="app-name" href="/#">Portfolio Manager</a>
       <span class="profile">
@@ -21,18 +21,18 @@
           <el-menu-item index="/main/dashboard" align="left">
             <template slot="title"><i class="discover-icon"></i>Dashboard</template>
           </el-menu-item>
-          <el-menu-item index="/main/CRUD" align="left">
-            <template slot="title"><i class="discover-icon"></i>CRUD</template>
+          <el-menu-item index="/main/manager" align="left">
+            <template slot="title"><i class="discover-icon"></i>Managers</template>
           </el-menu-item>
           <el-menu-item index="/main/upload" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="monitor-icon"></i>Upload</template>
           </el-menu-item>
-          <el-submenu index="2" align="left">
+          <el-menu-item index="/main/aggregation" align="left">
             <template slot="title"><i class="graph-icon"></i>Aggregation</template>
-          </el-submenu>
-          <el-submenu index="3" align="left">
+          </el-menu-item>
+          <el-menu-item index="/main/visualize" align="left">
             <template slot="title"><i class="setting-icon"></i>Visualize</template>
-          </el-submenu>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       <el-main class="main">
@@ -74,7 +74,7 @@
         });
       },
       wh() {
-        this.window.height = window.innerHeight-153+'px';
+        this.window.height = window.innerHeight + 'px';
       }
     },
     mounted(){
@@ -97,7 +97,7 @@
   .app-container {
     padding: 0;
     width:100%;
-    height:100%;
+    height: 100%;
     background-color: #f2f3f5;
     .header {
       background-color: #19a97b;
