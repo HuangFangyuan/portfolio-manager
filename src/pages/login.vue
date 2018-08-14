@@ -6,10 +6,10 @@
         <el-input v-model="form.id"></el-input>
       </el-form-item>
       <el-form-item label="Password">
-        <el-input v-model="form.password"></el-input>
+        <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
     </el-form>
-    <el-button type="primary" @click="login">登陆</el-button>
+    <el-button type="primary" @click="login">Log in</el-button>
   </div>
 </template>
 
@@ -33,11 +33,12 @@
         params.append('password', this.form.password);
         USER.login(params)
           .then(rep => {
+            console.log(rep)
             if(PREDICTION.httpSuccess(rep)){
               this.$store.commit("SET_LOG_FLAG", true);
-              this.$store.commit("SET_USER_ID", rep.data.data.id);
-              this.$store.commit("SET_USER_ROLE", rep.data.data.role.id);
-              this.$router.push('/main');
+              this.$store.commit("SET_USER_ID", rep.data.userId);
+              this.$store.commit("SET_USER_ROLE", rep.data.role);
+              this.$router.push('/main/dashboard');
             }else{
               this.$message.error("log in failed")
             }

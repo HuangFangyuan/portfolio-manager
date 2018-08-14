@@ -1,71 +1,70 @@
 <template>
   <div class="wrapper">
-    <h3 align="left">Portfolio</h3>
-    <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
-      <el-tab-pane
-        :key="item.name"
-        v-for="(item, index) in editableTabs"
-        :label="item.title"
-        :name="item.name"
-      >
-        <el-table
-          :data="managers"
-          style="width: 95%"
-          :default-sort = "{ prop: 'date', order: 'descending'}"
-        >
-          <el-table-column
-            prop="date"
-            label="date"
-            sortable
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="name"
-            sortable
-            width="180">
-          </el-table-column>
-          <el-table-column
-            prop="address"
-            label="address"
-            :formatter="formatter">
-          </el-table-column>
-          <el-table-column label="operate">
-            <template slot-scope="scope">
-              <el-button size="mini" @click="handleView(scope.$index, scope.row)">More</el-button>
-              <el-button size="mini">Edit</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="page-container">
-          <el-tag class="amount">total page: {{ item.pageSize }} , total data: {{ item.total }} </el-tag>
-          <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="item.pageNum" class="pagination"></el-pagination>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
+    <h3 class="title" align="left">Portfolio</h3>
+    <el-table
+      class="portfolio-table"
+      border
+      :data="portfolios"
+      style="width: 95%"
+      :default-sort = "{ prop: 'name', order: 'descending'}"
+      align="left"
+    >
+      <el-table-column
+        prop="name"
+        label="Name"
+        sortable
+        :width="labelWidth">
+      </el-table-column>
+      <el-table-column
+        prop="date"
+        label="Date"
+        sortable
+        :width="labelWidth">
+      </el-table-column>
+      <el-table-column
+        prop="cash"
+        label="Cash"
+        :width="labelWidth">
+      </el-table-column>
+      <el-table-column label="Operate">
+        <template slot-scope="scope">
+          <el-button size="mini" @click="handleView(scope.$index, scope.row)">Detail</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div class="page-container">
+      <el-tag class="amount">page size : {{ pageSize }} , total data: {{ total }} </el-tag>
+      <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="pageNum" class="pagination"></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
+  import PORTFOLIO from '../api/portfolio'
+  import PREDICTION from '../util/prediction'
   export default {
     data() {
       return {
-        editableTabsValue:'1',
-        editableTabs: [{
-          title: 'Tab 1',
-          name: '1',
-          content: 'Tab 1 content',
-          total:200,
-          pageNum:3,
-        },{
-          title: 'Tab 1',
-          name: '1',
-          content: 'Tab 1 content',
-          total:200,
-          pageNum:3,
-        }],
+        portfolios:[
+          {
+            id:1,
+            name:'111'
+          },{
+            id:2,
+            name:'222'
+          },{
+            id:3,
+            name:'333'
+          }
+        ],
+        total:200,
+        pageNum:3,
+        buyFormVisible:false,
+        sellFormVisible:false,
         pageSize:8,
-        tabIndex: 1
+        tabIndex: 1,
+        labelWidth:"150",
+        formLabelWidth:"120"
       }
     },
     methods:{
@@ -98,6 +97,73 @@
           this.editableTabsValue = activeName;
           this.editableTabs = tabs.filter(tab => tab.name !== targetName);
         }
+      },
+      handleView(){
+
+      },
+      buy(id){
+        PORTFOLIO.getPositionDetail(id)
+          .then(rep => {
+            if(PREDICTION.httpSuccess(rep)){
+              this.form = rep.data;
+              this.sellFormVisible = true;
+            }
+          })
+      },
+      submitBuyForm(){
+        let params = new URLSearchParams();
+        params.append('name', this.form.name);
+        params.append('qty', this.form.qty);
+        params.append('price', this.form.price);
+        PORTFOLIO.buy(params)
+          .then(rep => {
+            if(PREDICTION.httpSuccess(rep)){
+              this.$message.success("success")
+            }
+            this.buyFormVisible = false;
+          })
+      },
+      sell(id){
+        PORTFOLIO.getPositionDetail(id)
+          .then(rep => {
+            if(PREDICTION.httpSuccess(rep)){
+              this.form = rep.data;
+              this.sellFormVisible = true;
+            }
+          })
+      },
+      submitSellForm(){
+        let params = new URLSearchParams();
+        params.append('name', this.form.name);
+        params.append('qty', this.form.qty);
+        params.append('price', this.form.price);
+        PORTFOLIO.sell(params)
+          .then(rep => {
+            if(PREDICTION.httpSuccess(rep)){
+              this.$message.success("success")
+            }
+            this.sellFormVisible = false;
+          })
+      },
+      linkToBuyPage(){
+        this.$router.push('/main/stock');
+      },
+      displayPortfolio(id) {
+        PORTFOLIO.getPortfolio(id)
+          .then(rep => {
+//            if( PREDICTION.httpSuccess(rep)){
+              let data = rep.data;
+              this.editableTabs.push({
+                id: data.id,
+                title: 'Tab ' + data.id,
+//                name: data.id + '',
+                name:'1',
+                positions: data.positions,
+                total:data.total,
+                pageNum:data.total / this.pageSize * 10,
+              });
+//            }
+          });
       }
     }
   }
@@ -106,13 +172,18 @@
 <style scoped lang="scss">
   .wrapper{
     background-color: white;
-    width: 95%;
-    height: 500px;
-
+    width: 99%;
+    /*height: 580px;*/
+    .title {
+      margin: 20px 0 10px 20px;
+    }
+    .portfolio-table {
+      margin: 20px;
+    }
     .btn-group{
       display: flex;
       justify-content: flex-start;
-      margin: 20px;
+      margin: 5px 0 10px 0 ;
     }
     .page-container {
       width: 1100px;

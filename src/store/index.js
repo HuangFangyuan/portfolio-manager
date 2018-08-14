@@ -8,7 +8,7 @@ Vue.use(Vuex);
 const state = {
   login: false,
   userId:0,
-  role:'admin',
+  role:'manager',
   userName:'Test'
 };
 

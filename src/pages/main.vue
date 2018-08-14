@@ -15,24 +15,28 @@
         </el-dropdown>
       </span>
     </el-header>
+
     <el-container>
       <el-aside class="side-nav" width="200px">
         <el-menu class="menu" router>
           <el-menu-item index="/main/dashboard" align="left">
             <template slot="title"><i class="discover-icon"></i>Dashboard</template>
           </el-menu-item>
-          <el-menu-item index="/main/manager" align="left">
+          <el-menu-item index="/main/manager" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="discover-icon"></i>Managers</template>
+          </el-menu-item>
+          <el-menu-item index="/main/portfolio" v-if="role === 'manager'" align="left">
+            <template slot="title"><i class="discover-icon"></i>Portfolio</template>
           </el-menu-item>
           <el-menu-item index="/main/upload" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="monitor-icon"></i>Upload</template>
           </el-menu-item>
           <el-menu-item index="/main/aggregation" align="left">
-            <template slot="title"><i class="graph-icon"></i>Aggregation</template>
+            <template slot="title"><i class="graph-icon"></i>Report</template>
           </el-menu-item>
-          <el-menu-item index="/main/visualize" align="left">
-            <template slot="title"><i class="setting-icon"></i>Visualize</template>
-          </el-menu-item>
+          <!--<el-menu-item index="/main/visualize" align="left">-->
+            <!--<template slot="title"><i class="setting-icon"></i>Visualize</template>-->
+          <!--</el-menu-item>-->
         </el-menu>
       </el-aside>
       <el-main class="main">
@@ -40,7 +44,6 @@
       </el-main>
     </el-container>
   </el-container>
-
 </template>
 
 <script>

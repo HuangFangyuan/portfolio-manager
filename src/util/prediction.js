@@ -1,5 +1,5 @@
 export default {
     httpSuccess (rep) {
-      return rep.data.code === '0000000';
+      return rep.code === 200;
     }
 }

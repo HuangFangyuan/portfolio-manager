@@ -6,6 +6,8 @@ import Dashboard from '../pages/dashboard.vue'
 import Upload from '../pages/upload.vue'
 import Manager from '../pages/manager.vue'
 import Portfolio from '../pages/portfolio.vue'
+import Stock from '../pages/stock.vue'
+import position from '../pages/position.vue'
 
 Vue.use(Router)
 
@@ -30,6 +32,12 @@ export default new Router({
         },{
           path:'/main/portfolio',
           component:Portfolio
+        },{
+          path:'/main/stock',
+          component:Stock
+        },{
+          path:'/main/position',
+          component:position
         }
       ]
     }

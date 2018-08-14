@@ -1,11 +1,9 @@
 <template>
   <div class="wrapper">
     <p class="dashboard" align="left">Dashboard</p>
+    <!--<MyTitle title="Dashboard"></MyTitle>-->
     <div class="card-list">
-      <Card class="card" cardName="Average Rate" :amount="99.6" des="+0.6%" iconClass="discover-icon" ></Card>
-      <Card class="card" cardName="Average Rate" :amount="99.6" des="+0.6%" iconClass="discover-icon" ></Card>
-      <Card class="card" cardName="Average Rate" :amount="99.6" des="+0.6%" iconClass="discover-icon" ></Card>
-      <Card class="card" cardName="Average Rate" :amount="99.6" des="+0.6%" iconClass="discover-icon" ></Card>
+      <Card v-for="i in indices" class="card" cardName="i.indiciesName" :amount="111" des="+1.5%" iconClass="discover-icon" ></Card>
     </div>
 
     <div class="wrapper-2">
@@ -55,11 +53,15 @@
   import Card from '../components/card.vue'
   import Bar from '../components/bar.vue'
   import Activity from '../components/activity.vue'
+  import MyTitle from '../components/title.vue'
   import G2 from '@antv/g2';
+  import PORTFOLIO from '../api/portfolio'
+  import PREDICTION from '../util/prediction'
   export default {
     data() {
       return {
-        date:''
+        date:'',
+        indices:[]
       }
     },
     methods:{
@@ -148,31 +150,50 @@
           }
         });
         chart.render();
+      },
+      getIndices(){
+        PORTFOLIO.getIndices()
+          .then(rep => {
+            console.log(rep);
+            if(PREDICTION.httpSuccess(rep)){
+              this.indices = rep.data;
+              console.log(this.indices)
+            }
+          })
+          .catch(error =>{
+            console.log(error)
+          })
       }
     },
     components:{
       Card,
       Bar,
-      Activity
+      Activity,
+      MyTitle
     },
     mounted(){
       this.render();
-      this.render2()
+      this.render2();
+      this.getIndices();
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  .common{
+    border: 1px solid #ececee;
+    background-color: white;
+    margin-right: 20px;
+  }
   .wrapper{
     .dashboard{
       font-weight: bold;
     }
     .card-list{
-      border: 1px solid #ececee;
-      background-color: white;
+      @extend .common;
       display: flex;
       padding: 5px 30px;
-      margin-right: 20px;
+      height: 85px;
       .card {
         margin: 10px 100px 10px 10px;
       }
@@ -181,10 +202,11 @@
       display: flex;
       margin-top: 10px;
       .performance {
-        @extend .card-list;
+        @extend .common;
         display: block;
         width: 550px;
         height: 200px;
+        padding: 0 20px;
       }
       .failure-rate {
         width: 450px;
@@ -195,7 +217,8 @@
       margin-top: 10px;
       display: flex;
       .manager{
-        @extend .card-list;
+        @extend .common;
+        padding: 0 20px;
         display: block;
         width: 550px;
         height: 180px;
