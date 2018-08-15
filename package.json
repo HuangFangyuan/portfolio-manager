@@ -12,6 +12,7 @@
   "dependencies": {
     "@antv/g2": "^3.2.6",
     "axios": "^0.18.0",
+    "chart.js": "^2.7.2",
     "element-ui": "^2.3.9",
     "moment": "^2.22.1",
     "popper.js": "^1.14.3",

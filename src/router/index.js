@@ -8,14 +8,16 @@ import Manager from '../pages/manager.vue'
 import Portfolio from '../pages/portfolio.vue'
 import Stock from '../pages/stock.vue'
 import position from '../pages/position.vue'
+import positionDetail from '../pages/position-detail.vue'
 
 Vue.use(Router)
 
 export default new Router({
-  routes: [{
-    path:'/',
-    component:Login,
-  },
+  routes: [
+    {
+      path:'/',
+      component:Login,
+    },
     {
       path:'/main',
       component:Main,
@@ -33,13 +35,20 @@ export default new Router({
           path:'/main/portfolio',
           component:Portfolio
         },{
-          path:'/main/stock',
-          component:Stock
+          path:'/main/stock/:portfolioId',
+          component:Stock,
+          props:true
         },{
-          path:'/main/position',
-          component:position
+          path:'/main/position/:portfolioId',
+          component:position,
+          props:true
         }
       ]
+    },
+    {
+      path:'/positionDetail',
+      component:positionDetail,
+      // props:true
     }
   ]
 })

@@ -34,18 +34,18 @@
         v-if="editable">
       </el-table-column>
       <el-table-column
-        prop="date"
-        label="Date"
-        sortable>
-      </el-table-column>
-      <el-table-column
         prop="name"
         label="Name"
         sortable>
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="Address">
+        prop="date"
+        label="Date"
+        sortable>
+      </el-table-column>
+      <el-table-column
+        prop="contact"
+        label="Contact">
       </el-table-column>
       <el-table-column label="Operate">
         <template slot-scope="scope">
@@ -88,18 +88,7 @@
           contact:null
         },
         manager:{},
-        managers:[
-          {
-            date: '2016-05-02',
-            name: 'Tom',
-            address: 'New York'
-          },
-          {
-            date: '2016-05-02',
-            name: 'Tom',
-            address: 'New York'
-          }
-        ],
+        managers:[],
         total:200,
         pageNum:3,
         pageSize:8,

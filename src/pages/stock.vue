@@ -1,15 +1,21 @@
 <template>
   <div class="wrapper">
+    <div class="btn-group">
+      <el-button type="success" icon="el-icon-arrow-left" circle @click="back"></el-button>
+    </div>
+
     <div class="search">
       <el-input placeholder="value" v-model="value" class="input-with-select">
         <el-select v-model="select" slot="prepend" placeholder="Select" style="width: 120px">
           <el-option label="By Name" value="1"></el-option>
           <el-option label="By Type" value="2"></el-option>
         </el-select>
-        <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="getStocks(0)"></el-button>
       </el-input>
     </div>
+
     <el-table
+      stripe
       border
       :data="stocks"
       style="width: 97%"
@@ -22,17 +28,17 @@
         sortable
         :width="100">
       </el-table-column>
-      <el-table-column
-        prop="type"
-        label="Type"
-        sortable
-        :width="80">
-      </el-table-column>
+      <!--<el-table-column-->
+        <!--prop="type"-->
+        <!--label="Type"-->
+        <!--sortable-->
+        <!--:width="80">-->
+      <!--</el-table-column>-->
       <el-table-column
         prop="date"
         label="Date"
         sortable
-        :width="labelWidth">
+        :width="150">
       </el-table-column>
       <el-table-column
         prop="price"
@@ -40,17 +46,17 @@
         :width="labelWidth">
       </el-table-column>
       <el-table-column
-        prop="open_price"
+        prop="openPrice"
         label="Open Price"
         :width="labelWidth">
       </el-table-column>
       <el-table-column
-        prop="high_price"
+        prop="highPrice"
         label="High Price"
         :width="labelWidth">
       </el-table-column>
       <el-table-column
-        prop="low_price"
+        prop="lowPrice"
         label="Low Price"
         :width="labelWidth">
       </el-table-column>
@@ -72,17 +78,11 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog align="left" title="Buy" :visible.sync="buyFormVisible">
-      <div class="performance">
-        <div>
-          <p class="title" align="left">Performance</p>
-        </div>
+    <el-dialog align="left" title="Performance" :visible.sync="buyFormVisible">
+      <div>
         <div>
           <div id="c1"></div>
         </div>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="detailFormVisible = false">Close</el-button>
       </div>
     </el-dialog>
 
@@ -115,30 +115,12 @@
   import PORTFOLIO from '../api/portfolio'
   import PREDICTION from '../util/prediction'
   export default {
+    props: {
+      portfolioId: Number
+    },
     data() {
       return {
-        stocks:[
-          {
-            name:'FB',
-            type:'stock',
-            date:'2018-08-08',
-            price:120,
-            high_price:120,
-            open_price:120,
-            low_price:120,
-            vol:120,
-            chg:120
-          },{
-            name:'FB',
-            type:'stock',
-            date:'2018-08-08',
-            price:120,
-            high_price:120,
-            open_price:120,
-            low_price:120,
-            vol:120,
-            chg:120
-          }],
+        stocks:[],
         form:{
           name:'',
           price:'',
@@ -151,8 +133,9 @@
         formLabelWidth:"50",
         detailFormVisible:false,
         buyFormVisible:false,
-        select:'',
-        value:''
+        select:"2",
+//        value:'stocks',
+        value:'commodities'
       }
     },
     methods:{
@@ -160,7 +143,7 @@
         let params = {
           params:{
             from:from,
-            size:this.size,
+            size:this.pageSize,
             select:this.select,
             value:this.value
           }
@@ -168,7 +151,7 @@
         PORTFOLIO.getStocks(params)
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
-              this.$message.success("success")
+              this.stocks = rep.data.list[0];
             }
             else{
               this.$message.error(rep.message)
@@ -198,6 +181,8 @@
         let params = new URLSearchParams();
         params.append('name', this.form.name);
         params.append('qty', this.form.qty);
+        params.append('type', this.value);
+        params.append('portfolio_id', this.portfolioId);
         PORTFOLIO.buy(params)
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
@@ -246,27 +231,24 @@
 //          lineWidth: 1
 //        });
         chart.render();
+      },
+      back() {
+        this.$router.go(-1);
       }
+    },
+    mounted(){
+      this.getStocks();
     }
   }
 </script>
 
 <style scoped lang="scss">
+  @import "../assets/css/common";
   .wrapper{
+    width: 100%;
     .search{
       margin: 15px 0 15px 0;
       width: 400px;
-    }
-  }
-  .page-container {
-    width: 1100px;
-    margin-top: 30px;
-    display: flex;
-    .amount {
-      display: inline-block;
-    }
-    .pagination {
-      margin-left: auto;
     }
   }
 </style>

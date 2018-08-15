@@ -1,28 +1,28 @@
 import http from './public'
 
 export default {
-  getPositionDetail(id){
-    return http.get("/position/" + id);
-  },
-  getPositions(){
-    return http.get("/positions")
-  },
-  sell(params) {
-    return http.post('/sell', params);
-  },
-  buy(params) {
-    return http.post('/buy', params);
-  },
   getIndices(){
-    return http.get('/indices');
+    return http.simpleGet('/indices');
   },
   getStocks(params){
-    return http.get('/stock', params)
+    return http.get('/items', params)
   },
   getStockDetail(params){
     return http.get('/stock/detail', params)
   },
   getPortfolio(id){
-    return http.get('/portfolio/' + id)
+    return http.simpleGet('/portfolio/' + id)
+  },
+  getPortfolios(managerId, params){
+    return http.get('/portfolio/' + managerId, params)
+  },
+  addPortfolio(params){
+    return http.post('/portfolio', params)
+  },
+  buy(params){
+    return http.post('/position', params)
+  },
+  getPerformance(params){
+    return http.post('/performance', params)
   }
 }

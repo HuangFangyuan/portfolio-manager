@@ -1,51 +1,81 @@
 <template>
   <div class="wrapper">
-    <p class="dashboard" align="left">Dashboard</p>
+    <p class="dashboard">Dashboard</p>
     <!--<MyTitle title="Dashboard"></MyTitle>-->
     <div class="card-list">
-      <Card v-for="i in indices" class="card" cardName="i.indiciesName" :amount="111" des="+1.5%" iconClass="discover-icon" ></Card>
+      <Card v-for="i in indices" class="card" :cardName="i.indiciesName" :amount="i.price" :des="i.changeRate" :x="i.x"></Card>
     </div>
 
     <div class="wrapper-2">
       <div class="performance">
-        <div>
+        <div class="top-bar">
           <p class="title" align="left">Performance</p>
-          <!--<el-date-picker-->
-            <!--v-model="date"-->
-            <!--type="date"-->
-            <!--placeholder="pick date">-->
-          <!--</el-date-picker>-->
+          <el-input size="mini" class="input" v-model="input" placeholder="Input Stock" style="width: 110px"></el-input>
+          <!--<div class="time-picker block">-->
+            <!--<el-date-picker-->
+              <!--size="mini"-->
+              <!--v-model="value6"-->
+              <!--type="daterange"-->
+              <!--range-separator="To"-->
+              <!--start-placeholder="Start Date"-->
+              <!--end-placeholder="End Date">-->
+            <!--</el-date-picker>-->
+          <!--</div>-->
         </div>
         <div>
           <div id="c1"></div>
         </div>
-      </div>
-      <div class="failure-rate">
-        <p class="title" align="left">Failure Rate</p>
-        <div>
-          <div>
-            <div id="c2"></div>
+        <div class="bottom">
+          <div class="item">
+            <p class="price"> {{ todayPrice }}</p>
+            <p class="label">  Today </p>
           </div>
-          <div>
-
+          <div class="item">
+            <p class="price"> {{ yesterdayPrice }}</p>
+            <p class="label">  Yesterday </p>
           </div>
         </div>
-
       </div>
-    </div>
 
-    <div class="wrapper-3">
-      <div class="manager">
-        <p class="title" align="left">Activity</p>
-        <activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>
-        <activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>
-      </div>
       <div class="rank">
-        <p class="title" align="left">Rank</p>
+        <div class="top-bar">
+          <p class="title" align="left">Rank</p>
+          <p class="view-all" @click="">View All</p>
+        </div>
         <bar class="bar" :number=1 :percentage=87 name="Tom"></bar>
         <bar class="bar" :number=2 :percentage=87 name="Bob"></bar>
       </div>
+      <!--<div class="failure-rate">-->
+      <!--<p class="title" align="left">Failure Rate</p>-->
+      <!--<div>-->
+      <!--<div>-->
+      <!--<div id="c2"></div>-->
+      <!--</div>-->
+      <!--<div>-->
+
+      <!--</div>-->
+      <!--</div>-->
+      <!--</div>-->
     </div>
+
+    <!--<div class="wrapper-3">-->
+    <!--<div class="activity-wrapper">-->
+    <!--<div class="top-bar">-->
+    <!--<p class="title" align="left">Activity</p>-->
+    <!--<p class="view-all" @click="">View All</p>-->
+    <!--</div>-->
+    <!--<activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>-->
+    <!--<activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>-->
+    <!--</div>-->
+    <!--<div class="rank">-->
+    <!--<div class="top-bar">-->
+    <!--<p class="title" align="left">Rank</p>-->
+    <!--<p class="view-all" @click="">View All</p>-->
+    <!--</div>-->
+    <!--<bar class="bar" :number=1 :percentage=87 name="Tom"></bar>-->
+    <!--<bar class="bar" :number=2 :percentage=87 name="Bob"></bar>-->
+    <!--</div>-->
+    <!--</div>-->
   </div>
 </template>
 
@@ -61,31 +91,44 @@
     data() {
       return {
         date:'',
-        indices:[]
+        indices:[],
+        todayPrice:200,
+        yesterdayPrice:300,
+
+        stockName:'',
+        startDate:new Date().getMilliseconds() - 7*24*60*60,
+        endDate:new Date().getMilliseconds()
+      }
+    },
+    watch:{
+      stockName(){
+        this.getPerformance();
       }
     },
     methods:{
       render(){
-      var data = [{
-        year: '1991',
-        value: 3
-      }, {
-        year: '1992',
-        value: 4
-      }, {
-        year: '1993',
-        value: 3.5
-      }, {
-        year: '1994',
-        value: 5
-      }, {
-        year: '1995',
-        value: 4.9
-      }];
+        var data = [
+          {
+            year: '1991',
+            value: 3
+          }, {
+            year: '1992',
+            value: 4
+          }, {
+            year: '1993',
+            value: 3.5
+          }, {
+            year: '1994',
+            value: 5
+          }, {
+            year: '1995',
+            value: 4.9
+          }
+        ];
         const chart = new G2.Chart({
           container: 'c1',
           width: 500,
-          height: 200
+          height: 250
         });
         chart.source(data);
         chart.scale('value', {
@@ -151,10 +194,17 @@
         });
         chart.render();
       },
+      renderStockPerformance(data){
+        var ctx = document.getElementById("chart");
+        var myLineChart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: options
+        });
+      },
       getIndices(){
         PORTFOLIO.getIndices()
           .then(rep => {
-            console.log(rep);
             if(PREDICTION.httpSuccess(rep)){
               this.indices = rep.data;
               console.log(this.indices)
@@ -162,6 +212,21 @@
           })
           .catch(error =>{
             console.log(error)
+          })
+      },
+      getPerformance(){
+        let params = {
+          params:{
+            name:this.name,
+            startDate:this.startDate,
+            endDate:this.endDate
+          }
+        };
+        PORTFOLIO.getPerformance(params)
+          .then(rep => {
+            if(PREDICTION.httpSuccess(rep)){
+
+            }
           })
       }
     },
@@ -173,13 +238,14 @@
     },
     mounted(){
       this.render();
-      this.render2();
       this.getIndices();
+      this.getPerformance();
     }
   }
 </script>
 
 <style lang="scss" scoped>
+  /*@import "../assets/css/common";*/
   .common{
     border: 1px solid #ececee;
     background-color: white;
@@ -187,50 +253,88 @@
   }
   .wrapper{
     .dashboard{
+      text-align: left;
       font-weight: bold;
     }
     .card-list{
       @extend .common;
       display: flex;
-      padding: 5px 30px;
-      height: 85px;
+      padding: 5px 20px;
+      height: 90px;
       .card {
-        margin: 10px 100px 10px 10px;
+        margin: 10px auto;
       }
     }
+
     .wrapper-2{
       display: flex;
       margin-top: 10px;
       .performance {
         @extend .common;
         display: block;
-        width: 550px;
-        height: 200px;
+        width: 600px;
+        height: 430px;
         padding: 0 20px;
+        .top-bar {
+          display: flex;
+          align-items: center;
+          .input {
+            margin-left: auto;
+          }
+          .time-picker{
+            margin-left: auto;
+          }
+        }
+        .bottom{
+          display: flex;
+          justify-items: center;
+          p {
+            padding: 0;
+            margin: 0;
+          }
+          .item{
+            margin:0 auto;
+            .price{
+              font-size: 40px;
+            }
+            .label{
+              color: #b6b6b6;
+              font-size: 10px;
+            }
+          }
+        }
       }
-      .failure-rate {
-        width: 450px;
+      .rank{
         @extend .performance;
+        width: 450px;
+        .bar{
+          margin-bottom: 20px;
+        }
+        .top-bar{
+          display: flex;
+          justify-content: space-between;
+          .view-all{
+            color: #729bc4;
+          }
+        }
       }
     }
-    .wrapper-3{
-      margin-top: 10px;
-      display: flex;
-      .manager{
+    /*
+      .activity-wrapper{
         @extend .common;
         padding: 0 20px;
         display: block;
         width: 550px;
         height: 180px;
-      }
-      .rank{
-        @extend .manager;
-        width: 450px;
-        .bar{
-          margin-bottom: 20px;
+        .top-bar{
+          display: flex;
+          justify-content: space-between;
+          .view-all{
+            color: #729bc4;
+          }
         }
       }
-    }
+      */
     .title{
       font-weight: bold;
     }

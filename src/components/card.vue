@@ -9,7 +9,7 @@
         <span class="amount">{{ amount }}</span>
         <i class="arrow" :class="arrowIcon"></i>
       </div>
-      <p class="des up" align="left">{{ des }}</p>
+      <p class="des" align="left" :class="desColor">{{ des }}</p>
     </div>
   </div>
 </template>
@@ -18,28 +18,33 @@
   export default {
     data() {
       return {
-
+        arrowIcon:"",
+        iconClass:"indice-icon",
+        desColor:""
       }
     },
     props:{
       cardName:String,
       amount:Number,
       des:String,
-      iconClass:{
-        type: String,
-        default:"discover-icon"
-      },
-      arrowIcon: {
-        type: String,
-        default:"arrow-up up"
+      x:Boolean
+    },
+    mounted(){
+      if (this.x){
+        this.arrowIcon = "arrow-up up";
+        this.desColor = "up"
+      }
+      else{
+        this.arrowIcon = "arrow-down drop";
+        this.desColor = "drop"
       }
     }
   }
 </script>
 
 <style scoped lang="scss">
-  $icon-h: 18px;
-  $icon-w: 18px;
+  $icon-h: 24px;
+  $icon-w: 24px;
   .wrapper {
     display: flex;
     .left{
@@ -56,7 +61,7 @@
     .data-wrapper{
       display: flex;
       .amount{
-        font-size: 40px;
+        font-size: 35px;
         font-weight: 100;
         margin: 0 auto;
       }
@@ -75,8 +80,8 @@
     .drop {
       color: #10c7b1;
     }
-    .discover-icon {
-      background-image: url("../assets/svg/discover.svg");
+    .indice-icon {
+      background-image: url("../assets/svg/indice.svg");
       background-size: $icon-w $icon-h;
       width: $icon-w;
       height:$icon-h;
@@ -85,11 +90,11 @@
     }
     .arrow-up{
       background-image: url("../assets/svg/up.svg");
-      @extend .discover-icon
+      @extend .indice-icon
     }
     .arrow-down{
       background-image: url("../assets/svg/drop.svg");
-      @extend .discover-icon
+      @extend .indice-icon
     }
   }
 </style>

@@ -6,7 +6,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/x-www=form-urlencoded
 const baseUrl = "http://192.168.43.254:8080";
 
 export default {
-  get(uri, params = {}) {
+  get(uri, params) {
     return new Promise((resolve, reject) => {
       axios.get(baseUrl + uri, params)
         .then(rep => resolve(rep.data))
@@ -14,7 +14,7 @@ export default {
     })
   },
 
-  get(uri) {
+  simpleGet(uri) {
     return new Promise((resolve, reject) => {
       axios.get(baseUrl + uri)
         .then(rep => resolve(rep.data))

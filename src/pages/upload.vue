@@ -1,6 +1,15 @@
 <template>
   <div class="wrapper">
     <h3 align="left" class="title">Upload Data File</h3>
+    <el-select v-model="type.type" placeholder="select">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+        :disabled="item.disabled">
+      </el-option>
+    </el-select>
     <el-upload
       class="upload"
       ref="upload"
@@ -8,7 +17,8 @@
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :file-list="fileList"
-      :auto-upload="false">
+      :auto-upload="false"
+      :data = type>
       <el-button slot="trigger" size="small" type="primary">select file</el-button>
       <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">upload</el-button>
       <div slot="tip" class="el-upload__tip">note: cvs file only</div>
@@ -21,8 +31,21 @@
     name: "upload",
     data() {
       return {
-        url:"",
-        fileList: []
+        url:"http://192.168.43.46:8080/uploadFile",
+        fileList: [],
+        type:{
+          type:''
+        },
+        options:[
+          {
+            label:'Stock',
+            value:'Stock'
+          },
+          {
+            label:'Commodity',
+            value:'Commodity'
+          }
+        ]
       }
     },
     methods: {

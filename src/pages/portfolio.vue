@@ -1,39 +1,69 @@
 <template>
   <div class="wrapper">
     <h3 class="title" align="left">Portfolio</h3>
-    <el-table
-      class="portfolio-table"
-      border
-      :data="portfolios"
-      style="width: 95%"
-      :default-sort = "{ prop: 'name', order: 'descending'}"
-      align="left"
-    >
-      <el-table-column
-        prop="name"
-        label="Name"
-        sortable
-        :width="labelWidth">
-      </el-table-column>
-      <el-table-column
-        prop="date"
-        label="Date"
-        sortable
-        :width="labelWidth">
-      </el-table-column>
-      <el-table-column
-        prop="cash"
-        label="Cash"
-        :width="labelWidth">
-      </el-table-column>
-      <el-table-column label="Operate">
-        <template slot-scope="scope">
-          <el-button size="mini" @click="handleView(scope.$index, scope.row)">Detail</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+
+    <div class="btn-group">
+      <el-button type="success" icon="el-icon-plus" circle @click="createFormVisible = true"></el-button>
+    </div>
+
+    <div class="table-wrapper">
+      <el-table
+        class="portfolio-table"
+        border
+        stripe
+        :data="portfolios"
+        style="width: 95%"
+        :default-sort = "{ prop: 'name', order: 'descending'}"
+        align="left"
+      >
+        <el-table-column
+          prop="portId"
+          label="ID"
+          sortable
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column
+          prop="portName"
+          label="Name"
+          sortable
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column
+          prop="portDate"
+          label="Date"
+          sortable
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column
+          prop="cash"
+          label="Cash"
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column label="Operate">
+          <template slot-scope="scope">
+            <el-button size="mini" @click="linkToPositionPage(scope.row.portId)">Detail</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
+    <el-dialog align="left" title="New Portfolio" :visible.sync="createFormVisible">
+      <el-form :model="newPortfolio">
+        <el-form-item label="Name" :label-width="formLabelWidth">
+          <el-input v-model="newPortfolio.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="Initial Cash" :label-width="formLabelWidth">
+          <el-input v-model="newPortfolio.cash" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="createFormVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="addPortfolio">Confirm</el-button>
+      </div>
+    </el-dialog>
+
     <div class="page-container">
-      <el-tag class="amount">page size : {{ pageSize }} , total data: {{ total }} </el-tag>
+      <el-tag class="amount">Page size : {{ pageSize }} , Total data: {{ total }} </el-tag>
       <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="pageNum" class="pagination"></el-pagination>
     </div>
   </div>
@@ -42,159 +72,91 @@
 <script>
   import PORTFOLIO from '../api/portfolio'
   import PREDICTION from '../util/prediction'
+  import { mapState } from 'vuex'
   export default {
     data() {
       return {
-        portfolios:[
-          {
-            id:1,
-            name:'111'
-          },{
-            id:2,
-            name:'222'
-          },{
-            id:3,
-            name:'333'
-          }
-        ],
+        portfolios:[],
+        newPortfolio:{
+          name:'',
+          cash:null
+        },
         total:200,
         pageNum:3,
-        buyFormVisible:false,
-        sellFormVisible:false,
-        pageSize:8,
+        createFormVisible:false,
+        pageSize:4,
         tabIndex: 1,
-        labelWidth:"150",
+        labelWidth:"200",
         formLabelWidth:"120"
       }
     },
+    computed:mapState(['userId']),
     methods:{
       handleCurrentChange(page) {
-        this.getManagers(this.size * (page - 1));
+        this.getPortfolios(this.pageSize * (page - 1));
       },
-      handleTabsEdit(targetName, action) {
-        if (action === 'add') {
-          let newTabName = ++this.tabIndex + '';
-          this.editableTabs.push({
-            title: 'New Tab',
-            name: newTabName,
-            content: 'New Tab content'
-          });
-          this.editableTabsValue = newTabName;
-        }
-        if (action === 'remove') {
-          let tabs = this.editableTabs;
-          let activeName = this.editableTabsValue;
-          if (activeName === targetName) {
-            tabs.forEach((tab, index) => {
-              if (tab.name === targetName) {
-                let nextTab = tabs[index + 1] || tabs[index - 1];
-                if (nextTab) {
-                  activeName = nextTab.name;
-                }
-              }
-            });
+      getPortfolios(from = 0){
+        let params = {
+          params:{
+            from:from,
+            size:this.pageSize
           }
-          this.editableTabsValue = activeName;
-          this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-        }
-      },
-      handleView(){
-
-      },
-      buy(id){
-        PORTFOLIO.getPositionDetail(id)
+        };
+        PORTFOLIO.getPortfolios(this.userId, params)
           .then(rep => {
-            if(PREDICTION.httpSuccess(rep)){
-              this.form = rep.data;
-              this.sellFormVisible = true;
+            if(PREDICTION.httpSuccess(rep)) {
+              this.total = rep.data.size;
+              this.pageNum = rep.data.size / this.pageSize * 10;
+              this.portfolios = rep.data.portfolios;
+            }
+            else {
+              this.$message.error(rep.message);
             }
           })
       },
-      submitBuyForm(){
+      addPortfolio(){
         let params = new URLSearchParams();
-        params.append('name', this.form.name);
-        params.append('qty', this.form.qty);
-        params.append('price', this.form.price);
-        PORTFOLIO.buy(params)
+        params.append('name', this.newPortfolio.name);
+        params.append('cash', this.newPortfolio.cash);
+        params.append('managerID', this.userId);
+        PORTFOLIO.addPortfolio(params)
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
-              this.$message.success("success")
+              this.$message.success("Add Successfully")
+              this.getPortfolios();
             }
-            this.buyFormVisible = false;
+            this.createFormVisible = false;
           })
       },
-      sell(id){
-        PORTFOLIO.getPositionDetail(id)
-          .then(rep => {
-            if(PREDICTION.httpSuccess(rep)){
-              this.form = rep.data;
-              this.sellFormVisible = true;
-            }
-          })
-      },
-      submitSellForm(){
-        let params = new URLSearchParams();
-        params.append('name', this.form.name);
-        params.append('qty', this.form.qty);
-        params.append('price', this.form.price);
-        PORTFOLIO.sell(params)
-          .then(rep => {
-            if(PREDICTION.httpSuccess(rep)){
-              this.$message.success("success")
-            }
-            this.sellFormVisible = false;
-          })
-      },
-      linkToBuyPage(){
-        this.$router.push('/main/stock');
-      },
-      displayPortfolio(id) {
-        PORTFOLIO.getPortfolio(id)
-          .then(rep => {
-//            if( PREDICTION.httpSuccess(rep)){
-              let data = rep.data;
-              this.editableTabs.push({
-                id: data.id,
-                title: 'Tab ' + data.id,
-//                name: data.id + '',
-                name:'1',
-                positions: data.positions,
-                total:data.total,
-                pageNum:data.total / this.pageSize * 10,
-              });
-//            }
-          });
+      linkToPositionPage(portfolioId) {
+        this.$router.push('/main/position/' + portfolioId);
       }
+    },
+    mounted(){
+      this.getPortfolios();
     }
   }
 </script>
 
 <style scoped lang="scss">
+  @import "../assets/css/common";
   .wrapper{
     background-color: white;
-    width: 99%;
+    width: 100%;
     /*height: 580px;*/
     .title {
-      margin: 20px 0 10px 20px;
     }
-    .portfolio-table {
-      margin: 20px;
+    .table-wrapper {
+      height: 400px;
+      .portfolio-table {
+        margin: 20px;
+      }
     }
     .btn-group{
-      display: flex;
-      justify-content: flex-start;
-      margin: 5px 0 10px 0 ;
+
     }
     .page-container {
-      width: 1100px;
-      margin-top: 30px;
-      display: flex;
-      .amount {
-        display: inline-block;
-      }
-      .pagination {
-        margin-left: auto;
-      }
+
     }
   }
 </style>
