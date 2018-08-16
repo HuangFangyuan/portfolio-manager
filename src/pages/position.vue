@@ -1,122 +1,134 @@
 <template>
   <div class="wrapper">
-    <!--Title-->
-    <h3 class="title" align="left">Positions</h3>
+    <div class="">
+      <!--Title-->
+      <h3 class="title" align="left">Positions</h3>
 
-    <!--Buttons-->
-    <div class="btn-group">
-      <el-button type="success" icon="el-icon-arrow-left" circle @click="back"></el-button>
-      <el-button type="success" icon="el-icon-plus" circle @click="linkToBuyPage"></el-button>
-    </div>
-
-    <!--Position Table-->
-    <div class="table-wrapper">
-      <el-table
-        class="position-table"
-        stripe
-        border
-        :data="positions"
-        style="width: 95%"
-        :default-sort = "{ prop: 'name', order: 'descending'}"
-        align="left"
-      >
-        <el-table-column
-          prop="itemName"
-          label="Name"
-          sortable
-          :width="100">
-        </el-table-column>
-        <el-table-column
-          prop="type"
-          label="Type"
-          sortable
-          :width="labelWidth">
-        </el-table-column>
-        <el-table-column
-          prop="positionDate"
-          label="Date"
-          sortable
-          :width="labelWidth">
-        </el-table-column>
-        <el-table-column
-          prop="qty"
-          label="Qty"
-          :width="80">
-        </el-table-column>
-        <el-table-column
-          prop="iniPrice"
-          label="Initial Price($)"
-          :width="labelWidth">
-        </el-table-column>
-        <el-table-column
-          prop="curPrice"
-          label="Current Price($)"
-          :width="labelWidth">
-        </el-table-column>
-        <el-table-column
-          prop="totalValue"
-          label="Total Value($)"
-          :width="labelWidth">
-        </el-table-column>
-        <el-table-column label="Operate">
-          <template slot-scope="scope">
-            <el-button size="mini" @click="detail(scope.row.id)">Detail</el-button>
-            <el-button size="mini" type="success" @click="buy(scope.$index)">Buy</el-button>
-            <el-button size="mini" type="danger" @click="sell(scope.$index)">Sell</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <!--Position Detail-->
-    <el-dialog align="left" title="Performance" :visible.sync="detailDialogVisible" width="50%" style="height: 700px">
-      <iframe src="http://localhost:8080/#/positionDetail" width="800" height="400" frameborder="0" scrolling="auto" >
-
-      </iframe>
-    </el-dialog>
-
-    <!-- Buy Form -->
-    <el-dialog align="left" title="Buy" :visible.sync="buyFormVisible">
-      <el-form :model="form">
-        <el-form-item label="Name" :label-width="formLabelWidth">
-          <el-input v-model="form.name" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="price($)" :label-width="formLabelWidth">
-          <el-input v-model="form.price" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="Qty" :label-width="formLabelWidth">
-          <el-input v-model="form.qty"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="buyFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="submitBuyForm">Confirm</el-button>
+      <div class="top-bar">
+        <!--Buttons-->
+        <div class="btn-group">
+          <el-button title="back" type="success" icon="el-icon-arrow-left" circle @click="back"></el-button>
+          <el-button title="buy others" type="success" icon="el-icon-plus" circle @click="linkToBuyPage"></el-button>
+        </div>
+        <p class="cur-cash"> Current Cash: {{ currentCash }} $</p>
       </div>
-    </el-dialog>
 
-    <!-- Sell Form -->
-    <el-dialog align="left" title="Sell" :visible.sync="sellFormVisible">
-      <el-form :model="form">
-        <el-form-item label="Name" :label-width="formLabelWidth">
-          <el-input v-model="form.name" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="Price($)" :label-width="formLabelWidth">
-          <el-input v-model="form.price" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="Qty" :label-width="formLabelWidth">
-          <el-input v-model="form.qty"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="sellFormVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="submitSellForm">Confirm</el-button>
+
+      <!--Position Table-->
+      <div class="table-wrapper">
+        <el-table
+          class="position-table"
+          stripe
+          border
+          :data="positions"
+          style="width: 95%"
+          :default-sort = "{ prop: 'positionDate', order: 'descending'}"
+          align="left"
+          @sort-change="handleSort"
+        >
+          <el-table-column
+            prop="positionId"
+            label="Id"
+            sortable
+            :width="70">
+          </el-table-column>
+          <el-table-column
+            prop="itemName"
+            label="Name"
+            sortable
+            :width="100">
+          </el-table-column>
+          <el-table-column
+            prop="type"
+            label="Type"
+            :width="labelWidth">
+          </el-table-column>
+          <el-table-column
+            prop="positionDate"
+            label="Date"
+            sortable
+            :width="160"
+            :formatter="dateFormat">
+          </el-table-column>
+          <el-table-column
+            prop="qty"
+            label="Qty"
+            :width="80"
+            sortable>
+          </el-table-column>
+          <el-table-column
+            prop="iniPrice"
+            label="Initial Price($)"
+            :width="labelWidth">
+          </el-table-column>
+          <el-table-column
+            prop="curPrice"
+            label="Current Price($)"
+            :width="labelWidth">
+          </el-table-column>
+          <el-table-column
+            prop="totalValue"
+            label="Total Value($)"
+            :width="labelWidth">
+          </el-table-column>
+          <el-table-column label="Operate">
+            <template slot-scope="scope">
+              <el-button size="mini" @click="detail(scope.row.id)">Detail</el-button>
+              <el-button size="mini" type="success" @click="buy(scope.row)">Buy</el-button>
+              <el-button size="mini" type="danger" @click="sell(scope.row)">Sell</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
-    </el-dialog>
 
-    <!-- Pagination-->
-    <div class="page-container">
-      <el-tag class="amount">Page size : {{ pageSize }} , Total data: {{ total }} </el-tag>
-      <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="pageNum" class="pagination"></el-pagination>
+      <!--Position Detail-->
+      <el-dialog align="left" title="Performance" :visible.sync="detailDialogVisible" width="50%" style="height: 700px">
+        <iframe src="http://localhost:8080/#/positionDetail" width="800" height="400" frameborder="0" scrolling="auto" ></iframe>
+      </el-dialog>
+
+      <!-- Buy Form -->
+      <el-dialog align="left" title="Buy" :visible.sync="buyFormVisible">
+        <el-form :model="form">
+          <el-form-item label="Name" :label-width="formLabelWidth">
+            <el-input v-model="form.name" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="price($)" :label-width="formLabelWidth">
+            <el-input v-model="form.price" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="Qty" :label-width="formLabelWidth">
+            <el-input v-model="form.qty"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="buyFormVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitBuyForm">Confirm</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- Sell Form -->
+      <el-dialog align="left" title="Sell" :visible.sync="sellFormVisible">
+        <el-form :model="form">
+          <el-form-item label="Name" :label-width="formLabelWidth">
+            <el-input v-model="form.name" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="Price($)" :label-width="formLabelWidth">
+            <el-input v-model="form.price" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="Qty" :label-width="formLabelWidth">
+            <el-input v-model="form.qty"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="sellFormVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="submitSellForm">Confirm</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- Pagination-->
+      <div class="page-container">
+        <el-tag class="amount">Page size : {{ pageSize }} , Total data: {{ total }} </el-tag>
+        <el-pagination layout="prev, pager, next" background @current-change="handleCurrentChange" :total="pageNum" class="pagination"></el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -126,38 +138,46 @@
   import PORTFOLIO from '../api/portfolio'
   import PREDICTION from '../util/prediction'
   import G2 from '@antv/g2';
+  import { format } from '../util/date'
   export default {
     props: {
-      portfolioId: Number
+      portfolioId: String
     },
     data() {
       return {
         positions: [],
         form:{
+          positionId:null,
           name:'',
           price:'',
           qty:null,
           type:''
         },
-        total:200,
-        pageNum:3,
+        currentCash:0,
+        total:0,
+        pageNum:0,
         pageSize:4,
         detailDialogVisible:false,
         buyFormVisible:false,
         sellFormVisible:false,
-        labelWidth:"130",
-        formLabelWidth:"120"
+        labelWidth:"110",
+        formLabelWidth:"120",
+        order_type:'position_id',
+        sequence:"DESC"
       }
     },
     methods:{
       handleCurrentChange(page) {
         this.getPositions(this.pageSize * (page - 1));
       },
-      getPositions(from = 0){
+      getPositions(start = 0){
         let params = {
           params:{
-            from:from,
-            size:this.pageSize
+            from:start,
+            size:this.pageSize,
+            portId: this.portfolioId,
+            order_type:this.order_type,
+            sequence:this.sequence
           }
         };
         POSITION.getPositions(this.portfolioId ,params)
@@ -166,14 +186,14 @@
               this.total = rep.data.size;
               this.pageNum = rep.data.size / this.pageSize * 10;
               this.positions = rep.data.positions;
+              this.currentCash = rep.data.currentCash;
             }
           })
       },
-      buy(index){
-        let position = this.positions[index];
-        this.form.name = position.itemName;
-        this.form.price = position.curPrice;
-        this.form.type = position.type;
+      buy(row){
+        this.form.name = row.itemName;
+        this.form.price = row.curPrice;
+        this.form.type = row.type;
         this.buyFormVisible = true;
       },
       submitBuyForm(){
@@ -191,23 +211,27 @@
             this.buyFormVisible = false;
           })
       },
-      sell(index){
-        let position = this.positions[index];
-        this.form.name = position.itemName;
-        this.form.price = position.curPrice;
-        this.form.type = position.type;
+      sell(row){
+        this.form.name = row.itemName;
+        this.form.price = row.curPrice;
+        this.form.type = row.type;
+        this.form.positionId = row.positionId;
         this.sellFormVisible = true;
       },
       submitSellForm(){
         let params = new URLSearchParams();
         params.append('name', this.form.name);
         params.append('qty', this.form.qty);
-        params.append('portfolio_id', this.portfolioId);
+        params.append('position_id', this.form.positionId);
         params.append('type', this.form.type);
         POSITION.sell(params)
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
-              this.$message.success("success")
+              this.$message.success("success");
+              this.getPositions();
+            }
+            else {
+              this.$message.error(rep.message);
             }
             this.sellFormVisible = false;
           })
@@ -270,6 +294,31 @@
       },
       back() {
         this.$router.go(-1);
+      },
+      dateFormat(row, column) {
+        let date = row[column.property];
+        if (date === undefined) {
+          return "";
+        }
+        return format(date);
+      },
+      handleSort(info){
+        if (info.prop === 'positionId'){
+          this.order_type = 'position_id';
+        }
+        else if(info.prop === 'positionName') {
+          this.order_type = 'position_name';
+        }
+        else if(info.prop === 'qty'){
+          this.order_type = 'qty';
+        }
+        if (info.order === 'descending'){
+          this.sequence = "DESC";
+        }
+        else if(info.order === 'ascending') {
+          this.sequence = "ASC";
+        }
+        this.getPositions();
       }
     },
     mounted(){
@@ -283,20 +332,20 @@
   .wrapper {
     background-color: white;
     width: 100%;
-    /*height: 580px;*/
-    .title {
+    .top-bar {
+      display: flex;
+      align-items: center;
+      .cur-cash {
+        margin-left: auto;
+        margin-right: 40px;
+        color:#b6b6b6;
+      }
     }
     .table-wrapper {
       height: 350px;
       .position-table {
         margin: 20px;
       }
-    }
-    .btn-group {
-
-    }
-    .page-container {
-
     }
   }
 </style>

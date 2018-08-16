@@ -7,10 +7,12 @@ import ElementUI from 'element-ui';
 import store from './store/index'
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios'
+import moment from 'moment'
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.prototype.$http = axios;
+Vue.prototype.$moment = moment;
 
 /* eslint-disable no-new */
 new Vue({

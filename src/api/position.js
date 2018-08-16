@@ -8,9 +8,9 @@ export default {
     return http.get("/position/portfolio/" + portfolioId, params)
   },
   sell(params) {
-    return http.post('/sell', params);
+    return http.post('/position/sell', params);
   },
   buy(params) {
-    return http.post('/buy', params);
+    return http.post('/position', params);
   },
 }

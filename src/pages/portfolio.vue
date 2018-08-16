@@ -15,12 +15,14 @@
         style="width: 95%"
         :default-sort = "{ prop: 'name', order: 'descending'}"
         align="left"
+        @sort-change="handleSort"
       >
         <el-table-column
           prop="portId"
           label="ID"
           sortable
-          :width="labelWidth">
+          :width="80"
+          >
         </el-table-column>
         <el-table-column
           prop="portName"
@@ -32,11 +34,27 @@
           prop="portDate"
           label="Date"
           sortable
+          :width="labelWidth"
+          :formatter="dateFormat">
+        </el-table-column>
+        <el-table-column
+          prop="portValue"
+          label="Init Value($)"
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column
+          prop="currentValue"
+          label="Cur Value($)"
+          :width="labelWidth">
+        </el-table-column>
+        <el-table-column
+          prop="percent"
+          label="CHG"
           :width="labelWidth">
         </el-table-column>
         <el-table-column
           prop="cash"
-          label="Cash"
+          label="Cur Cash($)"
           :width="labelWidth">
         </el-table-column>
         <el-table-column label="Operate">
@@ -73,6 +91,7 @@
   import PORTFOLIO from '../api/portfolio'
   import PREDICTION from '../util/prediction'
   import { mapState } from 'vuex'
+  import { format } from '../util/date'
   export default {
     data() {
       return {
@@ -86,8 +105,10 @@
         createFormVisible:false,
         pageSize:4,
         tabIndex: 1,
-        labelWidth:"200",
-        formLabelWidth:"120"
+        labelWidth:"153",
+        formLabelWidth:"120",
+        order_type:'port_id',
+        sequence:"ASC"
       }
     },
     computed:mapState(['userId']),
@@ -99,7 +120,9 @@
         let params = {
           params:{
             from:from,
-            size:this.pageSize
+            size:this.pageSize,
+            order_type:this.order_type,
+            sequence:this.sequence
           }
         };
         PORTFOLIO.getPortfolios(this.userId, params)
@@ -130,6 +153,31 @@
       },
       linkToPositionPage(portfolioId) {
         this.$router.push('/main/position/' + portfolioId);
+      },
+      dateFormat(row, column) {
+        let date = row[column.property];
+        if (date === undefined) {
+          return "";
+        }
+        return format(date);
+      },
+      handleSort(info){
+        if (info.prop === 'portId'){
+          this.order_type = 'port_id';
+        }
+        else if(info.prop === 'portName') {
+          this.order_type = 'port_name';
+        }
+        else if(info.prop === 'portDate'){
+          this.order_type = 'port_date';
+        }
+        if (info.order === 'descending'){
+          this.sequence = "DESC";
+        }
+        else if(info.order === 'ascending') {
+          this.sequence = "ASC";
+        }
+        this.getPortfolios();
       }
     },
     mounted(){

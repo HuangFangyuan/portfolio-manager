@@ -2,15 +2,15 @@
   <el-container class="app-container" :style="window">
     <el-header class="header">
       <a class="app-name" href="/#">Portfolio Manager</a>
-      <span class="profile">
-        <img class="avatar" src="../assets/logo.png"/>
+      <span class="profile"  style="display: flex; justify-content: center">
+        <img class="avatar" src="../assets/logo.png" style="margin-right: 10px"/>
         <el-dropdown  trigger="click">
           <span class="el-dropdown-link">
             {{ userName }}<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>Profile</el-dropdown-item>
-            <el-dropdown-item @click="logout">Log out</el-dropdown-item>
+            <!--<el-dropdown-item>Profile</el-dropdown-item>-->
+            <el-dropdown-item><span @click="logout">Log out</span></el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
@@ -20,10 +20,13 @@
       <el-aside class="side-nav" width="200px">
         <el-menu class="menu" router>
           <el-menu-item index="/main/dashboard" align="left">
-            <template slot="title"><i class="discover-icon"></i>Dashboard</template>
+            <template slot="title"><i class="graph-icon"></i>Dashboard</template>
           </el-menu-item>
           <el-menu-item index="/main/manager" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="discover-icon"></i>Managers</template>
+          </el-menu-item>
+          <el-menu-item index="/main/assign-portfolio" v-if="role === 'admin'" align="left">
+            <template slot="title"><i class="discover-icon"></i>Portfolio</template>
           </el-menu-item>
           <el-menu-item index="/main/portfolio" v-if="role === 'manager'" align="left">
             <template slot="title"><i class="discover-icon"></i>Portfolio</template>
@@ -31,9 +34,9 @@
           <el-menu-item index="/main/upload" v-if="role === 'admin'" align="left">
             <template slot="title"><i class="monitor-icon"></i>Upload</template>
           </el-menu-item>
-          <el-menu-item index="/main/aggregation" align="left">
-            <template slot="title"><i class="graph-icon"></i>Report</template>
-          </el-menu-item>
+          <!--<el-menu-item index="/main/aggregation" align="left">-->
+            <!--<template slot="title"><i class="graph-icon"></i>Report</template>-->
+          <!--</el-menu-item>-->
           <!--<el-menu-item index="/main/visualize" align="left">-->
             <!--<template slot="title"><i class="setting-icon"></i>Visualize</template>-->
           <!--</el-menu-item>-->
@@ -61,20 +64,22 @@
     computed:mapState(['userId','role','userName']),
     methods:{
       logout(){
-        USER.logout({
-          id: this.userId
-        })
-          .then(rep => {
-          if (PREDICTION.httpSuccess(rep)) {
-            this.$store.commit("SET_LOG_FLAG", false);
-            this.$store.commit("SET_USER_ID", null);
-            this.$store.commit("SET_USER_ROLE", null);
-            this.$router.push('/');
-          }
-          else {
-            this.$message.error(rep.data.msg);
-          }
-        });
+//        USER.logout({
+//          id: this.userId
+//        })
+//          .then(rep => {
+//          if (PREDICTION.httpSuccess(rep)) {
+//            this.$store.commit("SET_LOG_FLAG", false);
+//            this.$store.commit("SET_USER_ID", null);
+//            this.$store.commit("SET_USER_ROLE", null);
+//            this.$router.push('/');
+//          }
+//          else {
+//            this.$message.error(rep.data.msg);
+//          }
+//        });
+        console.log(111)
+        this.$router.push('/');
       },
       wh() {
         this.window.height = window.innerHeight + 'px';

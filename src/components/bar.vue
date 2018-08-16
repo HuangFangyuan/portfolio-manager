@@ -3,7 +3,7 @@
     <div>
       <div class="text" align="left">
         <span class="name">{{ number }}.{{ name }}</span>
-        <span class="percentage">{{ percentage }}%</span>
+        <span class="percentage">{{ value }}</span>
       </div>
       <el-progress :percentage="percentage" :showText="false"></el-progress>
     </div>
@@ -19,6 +19,7 @@
     props:{
       number:Number,
       percentage:Number,
+      value:Number,
       name:String
     }
   }

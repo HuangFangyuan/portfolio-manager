@@ -4,7 +4,7 @@ export default {
   getIndices(){
     return http.simpleGet('/indices');
   },
-  getStocks(params){
+  getItems(params){
     return http.get('/items', params)
   },
   getStockDetail(params){
@@ -22,7 +22,17 @@ export default {
   buy(params){
     return http.post('/position', params)
   },
-  getPerformance(params){
-    return http.post('/performance', params)
+  getPerformance(type, name,params){
+    return http.get('/' + type + '/' + name, params)
+  },
+  getPortByMangerId() {
+    // return http.get();
+  },
+  assignTo(params) {
+    return http.post('/portfolio/manager',params)
+  },
+
+  getRank() {
+    return http.get('/managerRanks')
   }
 }

@@ -10,17 +10,18 @@
       <div class="performance">
         <div class="top-bar">
           <p class="title" align="left">Performance</p>
-          <el-input size="mini" class="input" v-model="input" placeholder="Input Stock" style="width: 110px"></el-input>
-          <!--<div class="time-picker block">-->
-            <!--<el-date-picker-->
-              <!--size="mini"-->
-              <!--v-model="value6"-->
-              <!--type="daterange"-->
-              <!--range-separator="To"-->
-              <!--start-placeholder="Start Date"-->
-              <!--end-placeholder="End Date">-->
-            <!--</el-date-picker>-->
-          <!--</div>-->
+          <div class="right">
+            <el-dropdown class="select" @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ itemType }}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="stocks">Stock</el-dropdown-item>
+                <el-dropdown-item  command="commodities">Commodity</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-input size="mini" class="input" v-model="itemName" placeholder="Input item"></el-input>
+          </div>
         </div>
         <div>
           <div id="c1"></div>
@@ -40,42 +41,11 @@
       <div class="rank">
         <div class="top-bar">
           <p class="title" align="left">Rank</p>
-          <p class="view-all" @click="">View All</p>
+          <!--<p class="view-all" @click="viewAll">View All</p>-->
         </div>
-        <bar class="bar" :number=1 :percentage=87 name="Tom"></bar>
-        <bar class="bar" :number=2 :percentage=87 name="Bob"></bar>
+        <bar v-for="(r, index) in ranks" class="bar" :number=(index+1) :percentage=r.value :value=r.percent :name=r.userName></bar>
       </div>
-      <!--<div class="failure-rate">-->
-      <!--<p class="title" align="left">Failure Rate</p>-->
-      <!--<div>-->
-      <!--<div>-->
-      <!--<div id="c2"></div>-->
-      <!--</div>-->
-      <!--<div>-->
-
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
     </div>
-
-    <!--<div class="wrapper-3">-->
-    <!--<div class="activity-wrapper">-->
-    <!--<div class="top-bar">-->
-    <!--<p class="title" align="left">Activity</p>-->
-    <!--<p class="view-all" @click="">View All</p>-->
-    <!--</div>-->
-    <!--<activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>-->
-    <!--<activity message1="11111" message2="11111" message3="11111" message4="11111"></activity>-->
-    <!--</div>-->
-    <!--<div class="rank">-->
-    <!--<div class="top-bar">-->
-    <!--<p class="title" align="left">Rank</p>-->
-    <!--<p class="view-all" @click="">View All</p>-->
-    <!--</div>-->
-    <!--<bar class="bar" :number=1 :percentage=87 name="Tom"></bar>-->
-    <!--<bar class="bar" :number=2 :percentage=87 name="Bob"></bar>-->
-    <!--</div>-->
-    <!--</div>-->
   </div>
 </template>
 
@@ -92,39 +62,35 @@
       return {
         date:'',
         indices:[],
+        ranks:[],
         todayPrice:200,
         yesterdayPrice:300,
-
-        stockName:'',
-        startDate:new Date().getMilliseconds() - 7*24*60*60,
-        endDate:new Date().getMilliseconds()
+        itemType:'commodities',
+        itemName:'COFF',
+        startDate:'',
+        endDate:'',
       }
     },
     watch:{
-      stockName(){
+      itemName(){
         this.getPerformance();
       }
     },
     methods:{
-      render(){
-        var data = [
-          {
-            year: '1991',
-            value: 3
-          }, {
-            year: '1992',
-            value: 4
-          }, {
-            year: '1993',
-            value: 3.5
-          }, {
-            year: '1994',
-            value: 5
-          }, {
-            year: '1995',
-            value: 4.9
-          }
-        ];
+      init(){
+//        this.startDate = this.dateFormatter(new Date().getTime() - 7*24*60*60*1000);
+//        this.endDate = this.dateFormatter(new Date().getTime());
+        this.startDate = '2017/12/11';
+        this.endDate = '2017/12/15';
+      },
+      dateFormatter(time){
+        let date = new Date(time);
+        let year = date.getFullYear(),
+          month = date.getMonth() + 1,
+          day = date.getDate();
+        return year + '/' + month + '/' + day;
+      },
+      render(data){
         const chart = new G2.Chart({
           container: 'c1',
           width: 500,
@@ -132,9 +98,9 @@
         });
         chart.source(data);
         chart.scale('value', {
-          min: 0
+//          min: 0,
         });
-        chart.scale('year', {
+        chart.scale('day', {
           range: [0, 1]
         });
         chart.tooltip({
@@ -142,65 +108,8 @@
             type: 'line'
           }
         });
-        chart.line().position('year*value').shape('smooth');
-//        chart.point().position('year*value').size(4).shape('circle').style({
-//          stroke: '#fff',
-//          lineWidth: 1
-//        });
+        chart.line().position('day*value').shape('smooth');
         chart.render();
-      },
-      render2(){
-        var data = [{
-          "term": "Zombieland",
-          "count": 9
-        }];
-        var chart = new G2.Chart({
-          container: 'c2',
-          forceFit: true,
-          height: 200,
-          padding: [20, 80]
-        });
-        chart.source(data, {
-          count: {
-            max: 12
-          }
-        });
-        chart.coord('theta', {
-          innerRadius: 0.2,
-          endAngle: Math.PI
-        });
-        chart.interval().position('term*count').color('#8543e0').shape('line').select(false).style({
-          lineAppendWidth: 10
-        }); // 线状柱状图
-        chart.point().position('term*count').color('#8543e0').shape('circle');
-        for (var i = 0, l = data.length; i < l; i++) {
-          var obj = data[i];
-          chart.guide().text({
-            position: [obj.term, 0],
-            content: obj.term + ' ',
-            style: {
-              textAlign: 'right'
-            }
-          });
-        }
-        chart.guide().text({
-          position: ['50%', '50%'],
-          content: 'Music',
-          style: {
-            textAlign: 'center',
-            fontSize: 24,
-            fill: '#8543e0'
-          }
-        });
-        chart.render();
-      },
-      renderStockPerformance(data){
-        var ctx = document.getElementById("chart");
-        var myLineChart = new Chart(ctx, {
-          type: 'line',
-          data: data,
-          options: options
-        });
       },
       getIndices(){
         PORTFOLIO.getIndices()
@@ -217,15 +126,53 @@
       getPerformance(){
         let params = {
           params:{
-            name:this.name,
             startDate:this.startDate,
             endDate:this.endDate
           }
         };
-        PORTFOLIO.getPerformance(params)
+        PORTFOLIO.getPerformance(this.itemType, this.itemName, params)
+          .then( rep => {
+            if(PREDICTION.httpSuccess(rep)){
+              let _data = [];
+              let date =  this.$moment(this.startDate, "YYYY/MM/DD");
+              for(let i = 0; i < rep.data.length; i++){
+                _data.push({
+                  day: this.$moment(date.add(1, 'day')).format("YYYY/MM/DD"),
+                  value: rep.data[i]
+                } )
+              }
+              this.render(_data);
+            }
+          });
+      },
+      handleCommand(command){
+        this.itemType = command;
+      },
+      getRanks(){
+        PORTFOLIO.getRank()
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
-
+              let highest;
+              if (rep.data > 0) {
+                highest = rep.data[0].percent;
+              }
+              if(highest <= 0) {
+                for(let i = 0; i< rep.data.length; i++ ){
+                  rep.data[i].value = 0;
+                }
+              }
+              else{
+                for(let i = 0; i< rep.data.length; i++ ){
+                  if(rep.data[i].percent > 0) {
+                    rep.data[i].value = rep.data[i].percent / highest * 100;
+                  }
+                  else{
+                    rep.data[i].value = 0;
+                  }
+                }
+              }
+              this.ranks = rep.data;
+              console.log(this.ranks);
             }
           })
       }
@@ -237,9 +184,10 @@
       MyTitle
     },
     mounted(){
-      this.render();
+      this.init();
       this.getIndices();
       this.getPerformance();
+      this.getRanks();
     }
   }
 </script>
@@ -278,11 +226,14 @@
         .top-bar {
           display: flex;
           align-items: center;
-          .input {
+          .right{
             margin-left: auto;
-          }
-          .time-picker{
-            margin-left: auto;
+            .select{
+              margin-right: 20px;
+            }
+            .input {
+              width: 95px;
+            }
           }
         }
         .bottom{
@@ -319,22 +270,6 @@
         }
       }
     }
-    /*
-      .activity-wrapper{
-        @extend .common;
-        padding: 0 20px;
-        display: block;
-        width: 550px;
-        height: 180px;
-        .top-bar{
-          display: flex;
-          justify-content: space-between;
-          .view-all{
-            color: #729bc4;
-          }
-        }
-      }
-      */
     .title{
       font-weight: bold;
     }
