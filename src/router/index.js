@@ -50,8 +50,9 @@ export default new Router({
       ]
     },
     {
-      path:'/positionDetail',
+      path:'/positionDetail/:itemName/:itemType',
       component:positionDetail,
+      props:true
     }
   ]
 })

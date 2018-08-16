@@ -1,7 +1,6 @@
 <template>
   <div class="wrapper">
     <p class="dashboard">Dashboard</p>
-    <!--<MyTitle title="Dashboard"></MyTitle>-->
     <div class="card-list">
       <Card v-for="i in indices" class="card" :cardName="i.indiciesName" :amount="i.price" :des="i.changeRate" :x="i.x"></Card>
     </div>
@@ -23,7 +22,7 @@
             <el-input size="mini" class="input" v-model="itemName" placeholder="Input item"></el-input>
           </div>
         </div>
-        <div>
+        <div style="height: 320px">
           <div id="c1"></div>
         </div>
         <div class="bottom">
@@ -32,8 +31,12 @@
             <p class="label">  Today </p>
           </div>
           <div class="item">
-            <p class="price"> {{ yesterdayPrice }}</p>
-            <p class="label">  Yesterday </p>
+            <p class="price"> {{ lowestPrice }}</p>
+            <p class="label">  Lowest </p>
+          </div>
+          <div class="item">
+            <p class="price"> {{ highestPrice }}</p>
+            <p class="label">  Highest </p>
           </div>
         </div>
       </div>
@@ -53,7 +56,6 @@
   import Card from '../components/card.vue'
   import Bar from '../components/bar.vue'
   import Activity from '../components/activity.vue'
-  import MyTitle from '../components/title.vue'
   import G2 from '@antv/g2';
   import PORTFOLIO from '../api/portfolio'
   import PREDICTION from '../util/prediction'
@@ -63,8 +65,9 @@
         date:'',
         indices:[],
         ranks:[],
-        todayPrice:200,
-        yesterdayPrice:300,
+        todayPrice:null,
+        lowestPrice:null,
+        highestPrice:null,
         itemType:'commodities',
         itemName:'COFF',
         startDate:'',
@@ -135,12 +138,23 @@
             if(PREDICTION.httpSuccess(rep)){
               let _data = [];
               let date =  this.$moment(this.startDate, "YYYY/MM/DD");
+              let highest;
+              let lowest;
+              if (rep.data.length >= 1) {
+                highest = rep.data[0];
+                lowest = rep.data[0];
+              }
               for(let i = 0; i < rep.data.length; i++){
+                if (rep.data[i] > highest) highest = rep.data[i];
+                if (rep.data[i] < lowest) lowest = rep.data[i];
                 _data.push({
                   day: this.$moment(date.add(1, 'day')).format("YYYY/MM/DD"),
                   value: rep.data[i]
                 } )
               }
+              this.highestPrice = highest;
+              this.lowestPrice = lowest;
+              this.todayPrice = rep.data[rep.data.length - 1];
               this.render(_data);
             }
           });
@@ -153,7 +167,7 @@
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
               let highest;
-              if (rep.data > 0) {
+              if (rep.data.length > 0) {
                 highest = rep.data[0].percent;
               }
               if(highest <= 0) {
@@ -180,8 +194,7 @@
     components:{
       Card,
       Bar,
-      Activity,
-      MyTitle
+      Activity
     },
     mounted(){
       this.init();
@@ -200,6 +213,7 @@
     margin-right: 20px;
   }
   .wrapper{
+    width: 1174px;
     .dashboard{
       text-align: left;
       font-weight: bold;

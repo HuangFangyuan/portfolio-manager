@@ -57,7 +57,7 @@
         </el-table-column>
         <el-table-column label="Operate">
           <template slot-scope="scope">
-            <el-button size="mini" @click="open(scope.row)">Assign</el-button>
+            <el-button size="mini" @click="openDialog(scope.row)">Assign</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -145,7 +145,7 @@
             }
           })
       },
-      open(row){
+      openDialog(row){
         this.form.portId = row.portId;
         this.form.preManager = row.managerId;
         this.formVisible = true;
@@ -170,7 +170,6 @@
 <style scoped lang="scss">
   @import "../assets/css/common";
   .wrapper{
-    width: 100%;
     .top-bar {
       display: flex;
       align-items: center;

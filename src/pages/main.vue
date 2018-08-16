@@ -23,23 +23,17 @@
             <template slot="title"><i class="graph-icon"></i>Dashboard</template>
           </el-menu-item>
           <el-menu-item index="/main/manager" v-if="role === 'admin'" align="left">
-            <template slot="title"><i class="discover-icon"></i>Managers</template>
+            <template slot="title"><i class="manager-icon"></i>Managers</template>
           </el-menu-item>
           <el-menu-item index="/main/assign-portfolio" v-if="role === 'admin'" align="left">
-            <template slot="title"><i class="discover-icon"></i>Portfolio</template>
+            <template slot="title"><i class="portfolio-icon"></i>Portfolio</template>
           </el-menu-item>
           <el-menu-item index="/main/portfolio" v-if="role === 'manager'" align="left">
-            <template slot="title"><i class="discover-icon"></i>Portfolio</template>
+            <template slot="title"><i class="portfolio-icon"></i>Portfolio</template>
           </el-menu-item>
           <el-menu-item index="/main/upload" v-if="role === 'admin'" align="left">
-            <template slot="title"><i class="monitor-icon"></i>Upload</template>
+            <template slot="title"><i class="upload-icon"></i>Upload</template>
           </el-menu-item>
-          <!--<el-menu-item index="/main/aggregation" align="left">-->
-            <!--<template slot="title"><i class="graph-icon"></i>Report</template>-->
-          <!--</el-menu-item>-->
-          <!--<el-menu-item index="/main/visualize" align="left">-->
-            <!--<template slot="title"><i class="setting-icon"></i>Visualize</template>-->
-          <!--</el-menu-item>-->
         </el-menu>
       </el-aside>
       <el-main class="main">
@@ -78,7 +72,6 @@
 //            this.$message.error(rep.data.msg);
 //          }
 //        });
-        console.log(111)
         this.$router.push('/');
       },
       wh() {
@@ -131,25 +124,25 @@
     .side-nav {
       .menu {
         height: 100%;
-        .discover-icon {
-          background-image: url("../assets/svg/discover.svg");
+        .graph-icon {
+          background-image: url("../assets/svg/graph.svg");
           background-size: $icon-w $icon-h;
           width: $icon-w;
           height:$icon-h;
           display: inline-block;
           margin: 0 15px 0 4px;
         }
-        .monitor-icon {
-          background-image: url("../assets/svg/monitor.svg");
-          @extend .discover-icon
+        .upload-icon {
+           background-image: url("../assets/svg/upload.svg");
+           @extend .graph-icon
         }
-        .graph-icon {
-          background-image: url("../assets/svg/graph.svg");
-          @extend .discover-icon
+        .manager-icon {
+          background-image: url("../assets/svg/manager.svg");
+          @extend .graph-icon
         }
-        .setting-icon {
-          background-image: url("../assets/svg/setting.svg");
-          @extend .discover-icon
+        .portfolio-icon {
+          background-image: url("../assets/svg/portfolio.svg");
+          @extend .graph-icon
         }
       }
     }

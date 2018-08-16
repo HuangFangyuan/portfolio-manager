@@ -1,9 +1,10 @@
 <template>
   <div class="wrapper">
-    <h3 class="title" align="left">Portfolio</h3>
+    <p class="title" align="left">Portfolio</p>
 
     <div class="btn-group">
-      <el-button type="success" icon="el-icon-plus" circle @click="createFormVisible = true"></el-button>
+      <!--<el-button type="success" icon="el-icon-plus" circle @click="createFormVisible = true"></el-button>-->
+      <i class="plus-icon"  @click="createFormVisible = true" title="Create new portfolio"></i>
     </div>
 
     <div class="table-wrapper">
@@ -100,8 +101,8 @@
           name:'',
           cash:null
         },
-        total:200,
-        pageNum:3,
+        total:null,
+        pageNum:null,
         createFormVisible:false,
         pageSize:4,
         tabIndex: 1,
@@ -145,7 +146,7 @@
         PORTFOLIO.addPortfolio(params)
           .then(rep => {
             if(PREDICTION.httpSuccess(rep)){
-              this.$message.success("Add Successfully")
+              this.$message.success("Add Successfully");
               this.getPortfolios();
             }
             this.createFormVisible = false;
@@ -189,22 +190,22 @@
 <style scoped lang="scss">
   @import "../assets/css/common";
   .wrapper{
-    background-color: white;
-    width: 100%;
-    /*height: 580px;*/
-    .title {
-    }
     .table-wrapper {
       height: 400px;
       .portfolio-table {
         margin: 20px;
       }
     }
-    .btn-group{
+  }
 
-    }
-    .page-container {
-
-    }
+  .plus-icon {
+    $icon-h: 24px;
+    $icon-w: 24px;
+    background-image: url("../assets/svg/plus.svg");
+    background-size: $icon-w $icon-h;
+    width: $icon-w;
+    height:$icon-h;
+    display: inline-block;
+    margin: 0 15px 0 4px;
   }
 </style>

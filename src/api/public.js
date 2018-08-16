@@ -3,7 +3,7 @@ import axios from 'axios'
 axios.defaults.timeout = 10000;
 axios.defaults.headers.post['Content-Type'] = 'application/x-www=form-urlencoded';
 
-const baseUrl = "http://192.168.43.46:8080";
+export const baseUrl = "http://192.168.43.46:8080";
 
 export default {
   get(uri, params) {

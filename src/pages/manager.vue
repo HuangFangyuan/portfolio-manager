@@ -1,9 +1,12 @@
 <template>
   <div class="wrapper">
     <div class="btn-group">
-      <el-button type="success" icon="el-icon-plus" @click="dialogFormVisible = true" circle></el-button>
-      <el-button type="primary" icon="el-icon-edit" circle @click="editable = ! editable"></el-button>
-      <el-button type="danger" icon="el-icon-delete" circle v-if="editable"></el-button>
+      <!--<el-button type="success" icon="el-icon-plus" @click="dialogFormVisible = true" circle></el-button>-->
+      <i class="plus-icon" @click="dialogFormVisible = true"></i>
+      <i class="edit-icon" @click="editable = ! editable"></i>
+      <i class="delete-icon" v-if="editable"></i>
+      <!--<el-button type="primary" icon="el-icon-edit" circle @click="editable = ! editable"></el-button>-->
+      <!--<el-button type="danger" icon="el-icon-delete" circle v-if="editable"></el-button>-->
     </div>
 
     <el-dialog title="New Manager" :visible.sync="dialogFormVisible">
@@ -79,25 +82,35 @@
       </el-table-column>
       <el-table-column label="Operate">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleView(scope.row)">More</el-button>
-          <el-button size="mini" v-if="editable">Edit</el-button>
-          <el-button size="mini" type="danger" v-if="editable">Delete</el-button>
+          <!--<el-button size="mini" @click="handleView(scope.row)">More</el-button>-->
+          <el-button size="mini" v-if="editable" @click="editManager(row)">Edit</el-button>
+          <el-button size="mini" type="danger" v-if="editable" @click="deleteManager">Delete</el-button>
         </template>
       </el-table-column>
     </el-table>
     </div>
 
-    <el-dialog title="Manager Detail" :visible.sync="managerDetailVisible">
+    <el-dialog title="Edit Manager" :visible.sync="managerEditVisible">
       <el-form :model="managerForm" lable-width="80px">
+        <el-form-item label="Id" :lable-width="formLabelWidth">
+          <el-input v-model="managerForm.id" disabled></el-input>
+        </el-form-item>
         <el-form-item label="Name" :lable-width="formLabelWidth">
-          <el-input v-model="managerForm.name"></el-input>
+          <el-input v-model="managerForm.name" disabled></el-input>
         </el-form-item>
-        <el-form-item label="Contact" :label-width="formLabelWidth">
-          <el-input v-model="managerForm.contact"></el-input>
+        <el-form-item label="Password" :label-width="formLabelWidth">
+          <el-input v-model="managerForm.password" type="password"></el-input>
         </el-form-item>
+        <el-form-item label="Re-enter Password" :label-width="formLabelWidth">
+          <el-input v-model="managerForm.password2"  type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="Tel" :label-width="formLabelWidth">
+          <el-input v-model="managerForm.tel"></el-input>
+        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="managerDetailVisible = false">Close</el-button>
+        <el-button @click="managerEditVisible = false">Close</el-button>
       </div>
     </el-dialog>
 
@@ -115,6 +128,7 @@
     data() {
       return {
         managerForm:{
+          id:null,
           name:'',
           password:'',
           password2:'',
@@ -126,7 +140,7 @@
         pageNum:0,
         pageSize:4,
         dialogFormVisible:false,
-        managerDetailVisible:false,
+        managerEditVisible:false,
         editable:false,
         labelWidth:"150",
         formLabelWidth:"120",
@@ -162,7 +176,26 @@
             this.dialogFormVisible = false;
           })
       },
+      deleteManager(){
+        MANAGER.removeManager(params)
+          .then(rep => {
+            if (PREDICTION.httpSuccess(rep)){
+              this.$message.success(rep.message);
+              this.getManagers();
+            }
+          })
+      },
+      editManager(row){
+        this.manager.id = row.userId;
+        this.manager.name = row.userName;
+        this.manager.tel = row.tel;
+        this.managerEditVisible = true;
+      },
       modifyManager(){
+        if(this.managerForm.password !== this.managerForm.password2) {
+          this.$message.error("Password is not the same");
+          return;
+        }
         let params = new URLSearchParams();
         params.append('name', this.managerForm.name);
         params.append('password', this.managerForm.password);
@@ -173,7 +206,7 @@
               this.$message.success(rep.message);
               this.getManagers();
             }
-            this.dialogFormVisible = false;
+            this.managerEditVisible = false;
           })
       },
       removeManager(id){
@@ -252,6 +285,27 @@
         margin-left: auto;
       }
     }
+  }
+
+  .plus-icon {
+    $icon-h: 24px;
+    $icon-w: 24px;
+    background-image: url("../assets/svg/plus.svg");
+    background-size: $icon-w $icon-h;
+    width: $icon-w;
+    height:$icon-h;
+    display: inline-block;
+    margin: 0 15px 0 4px;
+  }
+
+  .edit-icon {
+    background-image: url("../assets/svg/edit.svg");
+    @extend .plus-icon
+  }
+
+  .delete-icon {
+    background-image: url("../assets/svg/delete.svg");
+    @extend .plus-icon
   }
 
 </style>

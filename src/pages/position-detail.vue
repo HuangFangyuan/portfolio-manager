@@ -6,7 +6,7 @@
         <div class="time-picker block">
         <el-date-picker
         size="mini"
-        v-model="value6"
+        v-model="date"
         type="daterange"
         range-separator="To"
         start-placeholder="Start Date"
@@ -23,36 +23,27 @@
 
 <script>
   import G2 from '@antv/g2';
+  import PORTFOLIO from '../api/portfolio'
+  import PREDICTION from '../util/prediction'
   export default {
+    props:{
+      itemType:String,
+      itemName:String
+    },
     data() {
       return {
-        stockName:'',
-        startDate:new Date().getMilliseconds() - 7*24*60*60,
-        endDate:new Date().getMilliseconds()
+        date:''
       }
     },
     watch:{
-
+      date(){
+        // console.log(this.$moment(this.date[0]).format('YYYY/MM/DD')),
+        //   console.log(this.$moment(this.date[1]).format('YYYY/MM/DD'))
+        this.getPerformance();
+      },
     },
     methods:{
-      render(){
-        var data = [
-          {
-            year: '1991',
-            value: 3
-          }, {
-            year: '1992',
-            value: 4
-          }, {
-            year: '1993',
-            value: 3.5
-          }, {
-            year: '1994',
-            value: 5
-          }, {
-            year: '1995',
-            value: 4.9
-          }];
+      render(data){
         const chart = new G2.Chart({
           container: 'c1',
           width: 500,
@@ -71,30 +62,36 @@
           }
         });
         chart.line().position('year*value').shape('smooth');
-//        chart.point().position('year*value').size(4).shape('circle').style({
-//          stroke: '#fff',
-//          lineWidth: 1
-//        });
         chart.render();
       },
       getPerformance(){
         let params = {
           params:{
-            name:this.name,
-            startDate:this.startDate,
-            endDate:this.endDate
+            startDate:this.$moment(this.date[0]).format('YYYY/MM/DD'),
+            endDate:this.$moment(this.date[1]).format('YYYY/MM/DD')
           }
         };
-        PORTFOLIO.getPerformance(params)
-          .then(rep => {
+        PORTFOLIO.getPerformance(this.itemType, this.itemName, params)
+          .then( rep => {
             if(PREDICTION.httpSuccess(rep)){
-
+              let _data = [];
+              let date =  this.$moment(this.startDate, "YYYY/MM/DD");
+              for(let i = 0; i < rep.data.length; i++){
+                if (rep.data[i] > highest) highest = rep.data[i];
+                if (rep.data[i] < lowest) lowest = rep.data[i];
+                _data.push({
+                  day: this.$moment(date.add(1, 'day')).format("YYYY/MM/DD"),
+                  value: rep.data[i]
+                } )
+              }
+              this.render(_data);
             }
-          })
-      }
+          });
+      },
     },
     mounted(){
-      this.render();
+      // this.render();
+      this.getPerformance();
     }
   }
 </script>
